@@ -543,6 +543,4 @@ class FlowMIA_GAN:
             fig.savefig(save, dpi=300, bbox_inches='tight')
             print(f"Saved: {save}")
         
-        plt.show()
         
-        return figs
