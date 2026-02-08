@@ -4,7 +4,7 @@ from scipy.special import rel_entr
 from scipy.stats import wasserstein_distance
 from scipy.special import kl_div
 import matplotlib.pyplot as plt
-
+import os
 
 def probs(sample, bins):
     """
@@ -107,3 +107,46 @@ def fidelity_compute(df_real, df_fake ,categorical):
 		dict_divergences[col] = np.array(divergences)
   
 	return dict_divergences
+
+
+def plotFidelity(divergence_dict, save_path):
+    metrics = [
+        "Kullback-Leibler (KL-d)",
+        "Jensen-Shannon (JS-d)",
+        "Wasserstein (W1)"
+    ]
+    columns = list(divergence_dict.keys())
+
+    values = np.array([divergence_dict[col].flatten() for col in columns])
+    values = np.clip(values, 1e-12, None)
+
+    x = np.arange(len(columns))
+    bar_width = 0.25
+
+    fig, ax = plt.subplots(figsize=(14, 6))
+
+    for i in range(3):
+        ax.bar(
+            x + i * bar_width,
+            values[:, i],
+            width=bar_width,
+            label=metrics[i]
+        )
+
+    ax.set_xticks(x + bar_width)
+    ax.set_xticklabels(columns, rotation=30, ha="right")
+    ax.set_ylabel("Divergence (log scale)")
+    ax.set_title("Distribution Divergence per Feature")
+    ax.set_yscale("log")  
+
+    ax.legend()
+    ax.grid(axis="y", linestyle="--", alpha=0.5, which="both")
+
+    plt.tight_layout()
+
+    save_path = os.path.join(save_path, "plots")
+    os.makedirs(save_path, exist_ok=True)
+    fid_path = os.path.join(save_path, "fidelity.pdf")
+
+    fig.savefig(fid_path, dpi=300, bbox_inches="tight")
+    plt.close(fig)

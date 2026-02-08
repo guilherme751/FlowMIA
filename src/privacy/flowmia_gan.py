@@ -185,7 +185,8 @@ class FlowMIA_GAN:
         checkpoints = []
         
         print('Preprocessors fitted. Starting GAN training...')
-        
+        save_path = os.path.join(save_path, 'checkpoints')
+        os.makedirs(save_path, exist_ok=True)
         epoch_bar = tqdm(range(epochs), desc="Training GAN", unit="epoch")
 
         for epoch in epoch_bar:
@@ -255,6 +256,7 @@ class FlowMIA_GAN:
                     'categorical_cols': self.categorical_cols,
                     'device': str(self.device)
                 }
+                
                 checkpoint_path = os.path.join(save_path, f'checkpoint_epoch_{epoch+1}.pth')
                 torch.save(checkpoint_dict, checkpoint_path)
                 print(f"\n✓ Model checkpoint {epoch+1} saved to {checkpoint_path}")
@@ -520,6 +522,7 @@ class FlowMIA_GAN:
         """
         Gera todos os plots
         """
+        save_path = os.path.join(save_path, 'plots')
         os.makedirs(save_path, exist_ok=True)
         y_true = np.hstack([
             np.ones(len(results['score_members'])),
@@ -542,5 +545,6 @@ class FlowMIA_GAN:
             save = os.path.join(save_path, f"{name}.pdf")
             fig.savefig(save, dpi=300, bbox_inches='tight')
             print(f"Saved: {save}")
+            plt.close(fig)
         
         

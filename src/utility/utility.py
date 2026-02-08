@@ -2,14 +2,15 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import RobustScaler, OneHotEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-
-
+import matplotlib.pyplot as plt
+import numpy as np
+import os
 
 class Utility:
-    def __init__(self, classifiers, train, test, synth):
-        self.num_cols = ['srcport', 'dstport', 'td', 'pkt', 'byt']
-        self.cat_cols = ['srcip', 'dstip', 'proto']        
-        label_col = 'label'
+    def __init__(self, classifiers, train, test, synth, categorical_cols, numerical_cols, ip_cols, label_col):
+        self.num_cols = numerical_cols
+        self.cat_cols = categorical_cols + ip_cols
+        self.label_col = label_col
         
         self.classifers = classifiers
         self.X_train = train[self.num_cols + self.cat_cols]
@@ -80,10 +81,13 @@ class Utility:
         return tstr_dict
 
     
-    def evaluate_utility(self):
+    def evaluate(self):
         utility_dict = {}
         for clf in self.classifers:
+            print('Utility for classifier:', clf.__class__.__name__)
+            print('Running RTR evaluation...')
             rtr_results = self.rtr(clf)
+            print('Running TSTR evaluation...')
             tstr_results = self.tstr(clf)
             utility_dict[clf.__class__.__name__] = {
                 "RTR": rtr_results,
@@ -92,7 +96,44 @@ class Utility:
         return utility_dict
     
     
-    def plot_utility(self, utility_dict):
-        pass
+    def plot_utility(self, utility_dict, save_path):
+        metrics = ["Accuracy", "Precision", "Recall", "F1-Score"]
+        classifiers = list(utility_dict.keys())
+        x = np.arange(len(classifiers))
+
+        fig, axes = plt.subplots(2, 2, figsize=(14, 8), sharex=True)
+        axes = axes.flatten()
+
+        bar_width = 0.6
+
+        for i, metric in enumerate(metrics):
+            tstr_values = [utility_dict[clf]["TSTR"][metric] for clf in classifiers]
+            rtr_values  = [utility_dict[clf]["RTR"][metric]  for clf in classifiers]
+
+            ax = axes[i]
+
+            # TSTR como barra
+            ax.bar(x, tstr_values, width=bar_width, alpha=0.7, label="TSTR")
+
+            # RTR como ponto
+            ax.scatter(x, rtr_values, zorder=3, label="RTR")
+
+            ax.set_title(metric)
+            ax.set_ylim(0, 1.05)
+            ax.grid(axis="y", linestyle="--", alpha=0.5)
+
+            if i >= 2:
+                ax.set_xticks(x)
+                ax.set_xticklabels(classifiers, rotation=30, ha="right")
+
+            if i == 0:
+                ax.legend()
+
+        plt.tight_layout()
+        save_path = os.path.join(save_path, 'plots')
+        os.makedirs(save_path, exist_ok=True)
+        util_path = os.path.join(save_path, 'utility.pdf')
+        plt.savefig(util_path)
+        plt.close()
     
 
