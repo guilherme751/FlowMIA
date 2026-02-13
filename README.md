@@ -1,4 +1,4 @@
-# FlowMIA: Framework de Avaliação de Privacidade para Dados Sintéticos de Fluxo de Rede
+# FlowMIA: Avaliando Ataques de Inferêcia de Membros em Modelos Generativos de Dados de Fluxo de Rede
 
 FlowMIA é um framework para avaliar riscos de privacidade em conjuntos de dados sintéticos de fluxo de rede usando Ataques de Inferência de Pertencimento (MIAs) baseados em modelos generativos profundos.
 
@@ -89,10 +89,18 @@ from src.flowmia import FlowMIA
 
 ```python
 config = {
-    'member_path': 'datasets/real/cidds_train.csv',
-    'non_member_path': 'datasets/reference/ton.csv',
-    'synth_path': 'datasets/synthetic/netshare.csv',
-    'save_path': 'results/netshare/'
+    'member_path': 'datasets/real/cidds_train.csv', # path dos membros
+    'non_member_path': 'datasets/reference/ton.csv', # path dos não-membros
+    'synth_path': 'datasets/synthetic/netshare.csv', # path dos sintéticos
+    'test_path': 'datasets/real/cidds_test.csv', # path do teste
+    'categorical_cols': ['proto'], # colunas categóricas
+    'numerical_cols': ['srcport', 'dstport', 'td', 'pkt', 'byt'], #colunas numéricas
+    'ip_cols': ['srcip', 'dstip'], # colunas de ip
+    'label_col': 'label', # nome da coluna do rótulo 
+    'batch_size': 200, # número de amostrar por lote
+    'num_epochs': 10, # número de épocas
+    'fcheckpoint': 5, # frequência para salvar o checkpoint
+    'save_path': 'teste/netshare'    # pasta para salvar resultados
 }
 ```
 
@@ -165,10 +173,19 @@ Isso avalia quão úteis os dados sintéticos são para treinar modelos de ML.
 ## Exemplo Completo
 
 ```python
-config = {
-    'member_path': 'datasets/real/cidds_train.csv',
-    'non_member_path': 'datasets/reference/ton.csv',
-    'synth_path': 'datasets/synthetic/netshare.csv'
+{
+    'member_path': 'datasets/real/cidds_train.csv', # path dos membros
+    'non_member_path': 'datasets/reference/ton.csv', # path dos não-membros
+    'synth_path': 'datasets/synthetic/netshare.csv', # path dos sintéticos
+    'test_path': 'datasets/real/cidds_test.csv', # path do teste
+    'categorical_cols': ['proto'], # colunas categóricas
+    'numerical_cols': ['srcport', 'dstport', 'td', 'pkt', 'byt'], #colunas numéricas
+    'ip_cols': ['srcip', 'dstip'], # colunas de ip
+    'label_col': 'label', # nome da coluna do rótulo 
+    'batch_size': 200, # número de amostrar por lote
+    'num_epochs': 500, # número de épocas
+    'fcheckpoint': 100, # frequência para salvar o checkpoint
+    'save_path': 'teste/netshare'    # pasta para salvar resultados
 }
 
 flowmia = FlowMIA(config)
