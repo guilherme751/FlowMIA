@@ -1,5 +1,12 @@
 # FlowMIA: Avaliando Ataques de Inferêcia de Membros em Modelos Generativos de Dados de Fluxo de Rede
 
+Guilherme Silveira Gomes Brotto
+
+Segurança em Computação
+
+Vídeo apresentação: [Vídeo](https://youtu.be/E95B0ZUr53w)
+Slides apresentação: [Slides](https://docs.google.com/presentation/d/1JTfF8BNcnTJOkX6QXxeCDJtobfV9eWn0i6LI9AD82f4/edit?usp=sharing)
+
 FlowMIA é um framework para avaliar riscos de privacidade em conjuntos de dados sintéticos de fluxo de rede usando Ataques de Inferência de Pertencimento (MIAs) baseados em modelos generativos profundos.
 
 Ele fornece um pipeline de avaliação sistemático que abrange:
