@@ -28,6 +28,7 @@ class FlowMIA():
                                         numerical_cols=self.numerical_cols,
                                         ip_cols=self.ip_cols, 
                                         batch_size = self.config['batch_size'])
+        
         self.colors = {
             'members': '#e74c3c',
             'non_members': '#3498db',
@@ -73,17 +74,25 @@ class FlowMIA():
 
         return metadata_dict
 
-    def flowmiagan(self, plot = False):
+    def flowmiagan(self, pre_trained_model = None, plot = False):
         print('Starting FlowMIA privacy evaluation...')
         print('Training FlowMIA GAN...')
-        self.mia_training_history = self.flowmia_gan.fit(epochs=self.config['num_epochs'], 
+        if pre_trained_model:
+            self.flowmia_gan.load_model(pre_trained_model)
+            self.mia_results = self.flowmia_gan.membership_inference()
+        else:
+            self.flowmia_gan.fit(epochs=self.config['num_epochs'], 
                                        fcheckpoint=self.config['fcheckpoint'], 
                                        save_path=self.config['save_path'])
-        self.mia_results = self.flowmia_gan.membership_inference()
+            self.mia_results = self.flowmia_gan.membership_inference()            
+            
         print(f'FlowMIA GAN inference results: {self.mia_results}')
         if plot:
             self.flowmia_gan.plot_all(results=self.mia_results, colors=self.colors, save_path=self.config['save_path'])        
-        return self.mia_training_history, self.mia_results
+        return self.mia_results
+    
+    
+    
     def compute_dcr(self, n_sample=15000): 
         print('Starting DCR evaluation...')
         meta_dict = self._build_metadata_dict_for_dcr()
