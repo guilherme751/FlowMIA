@@ -435,8 +435,8 @@ class FlowMIA_GAN:
         #             color=colors['random'], density=True)       
     
         
-        ax.set_xlabel('Score do Discriminador')
-        ax.set_ylabel('Densidade')
+        ax.set_xlabel('Discriminator Score')
+        ax.set_ylabel('Density')
         ax.legend(fontsize=8, loc='upper center')
         ax.grid(True, alpha=0.3)
         
@@ -462,8 +462,8 @@ class FlowMIA_GAN:
         ax1.plot(fpr, tpr, color="#000000", linewidth=2, 
                 label=f"AUC = {results.get('auc', 0):.4f}")
         ax1.plot([0, 1], [0, 1], 'k--', linewidth=1, label='Aleatório')
-        ax1.set_xlabel('Taxa de Falsos Positivos')
-        ax1.set_ylabel('Taxa de Verdadeiros Positivos')
+        ax1.set_xlabel('False Positive Rate')
+        ax1.set_ylabel('True Positive Rate')
         # ax1.set_title('Curva ROC')
         ax1.legend()
         ax1.grid(True, alpha=0.3)
@@ -503,8 +503,8 @@ class FlowMIA_GAN:
                    yticklabels=['Não-Membro', 'Membro'],
                    ax=ax, cbar_kws={'label': 'Contagem'})
         
-        ax.set_xlabel('Predito')
-        ax.set_ylabel('Verdadeiro')
+        ax.set_xlabel('Predicted')
+        ax.set_ylabel('Ground Truth')
         # ax.set_title(f'Confusion Matrix (Threshold={threshold:.4f})')
         
         # Adiciona porcentagens
