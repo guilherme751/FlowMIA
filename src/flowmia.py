@@ -14,7 +14,7 @@ class FlowMIA():
         self.util_test = pd.read_csv(self.config['test_path'])
         
         self.save_path = os.makedirs(self.config['save_path'], exist_ok=True)
-        
+        self.use_wgan = self.config['use_wgan']
         
         self.categorical_cols = self.config['categorical_cols']
         self.numerical_cols = self.config['numerical_cols']
@@ -27,7 +27,8 @@ class FlowMIA():
                                         categorical_cols=self.categorical_cols + [self.label_col],
                                         numerical_cols=self.numerical_cols,
                                         ip_cols=self.ip_cols, 
-                                        batch_size = self.config['batch_size'])
+                                        batch_size = self.config['batch_size'],
+                                        use_wgan=self.use_wgan)
         
         self.colors = {
             'members': '#e74c3c',
