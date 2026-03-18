@@ -178,7 +178,7 @@ def train(
     workspace: Path = Path("workspace"),
     start_epoch: int = 0,
     device: Any = DEVICE,
-    epochs: int = 50,
+    epochs: int = 5,
     save: bool = False,
     clip_norm: float = 0.1,
 ) -> Callable:
@@ -273,7 +273,7 @@ def density_estimator_trainer(
     min_lr: float = 5e-4,
     early_stopping: int = 100,
     device: Any = DEVICE,
-    epochs: int = 50,
+    epochs: int = 5,
     learning_rate: float = 1e-2,
     clip_norm: float = 0.1,
     polyak: float = 0.998,
@@ -315,7 +315,6 @@ def density_estimator_trainer(
         patience=patience,
         cooldown=cooldown,
         min_lr=min_lr,
-        verbose=True,
         early_stopping=early_stopping,
         threshold_mode="abs",
     )
@@ -338,3 +337,4 @@ def density_estimator_trainer(
         clip_norm=clip_norm,
     )
     return p_func, model
+
