@@ -120,7 +120,7 @@ class FlowMIA:
     # Attack methods
     # ------------------------------------------------------------------
 
-    def flowmiagan(self, pre_trained_model: str = None, plot: bool = False) -> dict:
+    def flowmiagan(self, pre_trained_model: str = None, plot: bool = False, test_size=1000) -> dict:
         """
         Run the FlowMIA-GAN membership inference attack.
 
@@ -148,7 +148,7 @@ class FlowMIA:
                 save_path=self.save_path,
             )
 
-        self.mia_results = self.flowmia_gan.membership_inference()
+        self.mia_results = self.flowmia_gan.membership_inference(test_size=test_size)
         print(f"FlowMIA-GAN results: AUC={self.mia_results['auc']:.4f}")
 
         if plot:
@@ -166,7 +166,7 @@ class FlowMIA:
 
         return self.mia_results
 
-    def domias(self, test_size: int = 1000) -> tuple[np.ndarray, float]:
+    def domias(self, test_size: int = 1000, epochs: int = 10, save_path: str = "", load: bool = False) -> tuple[np.ndarray, float]:
         """
         Run the DOMIAS membership inference attack.
 
@@ -191,6 +191,9 @@ class FlowMIA:
             non_members=self.X_non_member[idx_nm],
             synthetic_data=self.X_synth,
             device=self.device,
+            save_path=save_path,
+            epochs=epochs,
+            load=load
         )
         print(f"DOMIAS results: AUC={auc:.4f}")
         return scores, auc

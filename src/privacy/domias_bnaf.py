@@ -14,7 +14,7 @@ Reference:
 import numpy as np
 import torch
 from sklearn.metrics import roc_auc_score
-
+from pathlib import Path
 from src.privacy.domias.domias import density_estimator_trainer, compute_log_p_x
 
 
@@ -23,7 +23,10 @@ def domias_bnaf(
     non_members: np.ndarray,
     synthetic_data: np.ndarray,
     device: torch.device,
+    save_path: str = "",
+    epochs: int = 10,
     reference_data: np.ndarray = None,
+    load=False
 ) -> tuple[np.ndarray, float]:
     """
     Compute DOMIAS membership inference scores using a normalizing flow density model.
@@ -60,8 +63,9 @@ def domias_bnaf(
         synthetic_data,
         synthetic_data[:mid],
         synthetic_data[mid:],
-        epochs=5,
-        load=True,
+        epochs=epochs,
+        load=load,
+        workspace=Path(save_path)
     )
     log_p_S = compute_log_p_x(p_S_model, X_test_torch).detach().cpu().numpy()
 
@@ -72,6 +76,9 @@ def domias_bnaf(
             reference_data,
             reference_data[:mid_r],
             reference_data[mid_r:],
+            epochs=epochs,
+            load=load,
+            workspace=Path(save_path)
         )
         log_p_R = compute_log_p_x(p_R_model, X_test_torch).detach().cpu().numpy()
         scores = log_p_S - log_p_R

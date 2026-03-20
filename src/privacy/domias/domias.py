@@ -143,15 +143,15 @@ def save_model(
 def load_model(
     model: nn.Module,
     optimizer: Any,
-    workspace: Path = Path("workspace"),
+    workspace: Path,
 ) -> Callable:
     def f() -> None:
         if workspace.exists():
             return
 
         print("Loading model..")
-        if (workspace / "checkpoint.pt").exists():
-            checkpoint = torch.load(workspace / "checkpoint.pt")
+        if (workspace).exists():
+            checkpoint = torch.load(workspace)
             model.load_state_dict(checkpoint["model"])
             optimizer.load_state_dict(checkpoint["optimizer"])
 
