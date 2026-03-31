@@ -1,3 +1,6 @@
 ###### Stop training after 30 epochs!
 Validation loss: -59.924
 Test loss:       -93.814
+###### Stop training after 30 epochs!
+Validation loss: -77.805
+Test loss:       -87.029

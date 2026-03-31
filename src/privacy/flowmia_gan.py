@@ -88,8 +88,7 @@ class Discriminator(nn.Module):
 
         self.features = nn.Sequential(*layers)
         self.output = nn.Sequential(
-            nn.Linear(hidden_dims[-1], 1),
-            nn.Sigmoid(),
+            nn.Linear(hidden_dims[-1], 1)
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -381,6 +380,7 @@ class FlowMIA_GAN:
         idx_nm = rng.choice(len(self.X_non_member), size=test_size, replace=False)
         
         s_mem = self._score(self.X_member[idx_m])
+        print(s_mem.shape)
         s_non = self._score(self.X_non_member[idx_nm])
         s_syn = self._score(self.X_synth)
         s_rnd = self._random_score()

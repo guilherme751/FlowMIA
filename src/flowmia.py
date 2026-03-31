@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 import torch
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder, RobustScaler
+from sklearn.preprocessing import OneHotEncoder, RobustScaler, StandardScaler
 
 from src.privacy.flowmia_gan import FlowMIA_GAN
 from src.privacy.domias_bnaf import domias_bnaf
@@ -53,10 +53,6 @@ class FlowMIA:
     def __init__(self, config: dict):
         self.config = config
 
-        self.member = pd.read_csv(config["member_path"])
-        self.non_member = pd.read_csv(config["non_member_path"])
-        self.synth = pd.read_csv(config["synth_path"])
-        self.util_test = pd.read_csv(config["test_path"])
 
         os.makedirs(config["save_path"], exist_ok=True)
         self.save_path = config["save_path"]
@@ -67,25 +63,44 @@ class FlowMIA:
         self.label_col = config["label_col"]
         self.use_wgan = config["use_wgan"]
 
+        self.member = pd.read_csv(config["member_path"])[self.ip_cols + self.numerical_cols + self.categorical_cols + [self.label_col]]
+        self.non_member = pd.read_csv(config["non_member_path"])[self.ip_cols + self.numerical_cols + self.categorical_cols + [self.label_col]]
+        self.synth = pd.read_csv(config["synth_path"])[self.ip_cols + self.numerical_cols + self.categorical_cols + [self.label_col]]
+        self.util_test = pd.read_csv(config["test_path"])[self.ip_cols + self.numerical_cols + self.categorical_cols + [self.label_col]]
+        
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Using device: {self.device}")
         # --------------- preprocessor ---------------
         # Fits on synthetic data so the attack sees the same feature space
         # as the generator. IP columns are handled separately (see _transform).
-        all_cat = self.categorical_cols + [self.label_col]
+        all_cat = self.categorical_cols 
+        all_categories = []
+
+        for col in all_cat:
+            # pega categorias do REAL (não do synth)
+            cats = pd.concat([self.member[col], self.non_member[col]]).unique()
+            all_categories.append(sorted(cats))
+
         self.preprocessor = ColumnTransformer(
             transformers=[
-                ("num", RobustScaler(), self.numerical_cols),
-                ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), all_cat),
+                ("num", StandardScaler(), self.numerical_cols),
+                ("cat", OneHotEncoder(
+                    handle_unknown="ignore",
+                    sparse_output=False,
+                    categories=all_categories
+                ), all_cat),
             ]
         )
-        self.preprocessor.fit(self.synth)
+        print(self.synth.shape, self.member.shape)
+        fit_data = pd.concat([self.synth, self.member], axis=0)
+        print(fit_data.shape)
+        self.preprocessor.fit(fit_data)
 
         # Pre-transform every split once so downstream methods receive arrays
         self.X_member = self._transform(self.member)
         self.X_non_member = self._transform(self.non_member)
         self.X_synth = self._transform(self.synth)
-
+        print(self.X_member.shape, self.X_non_member.shape, self.X_synth.shape)
         # --------------- GAN ---------------
         self.flowmia_gan = FlowMIA_GAN(
             X_member=self.X_member,
