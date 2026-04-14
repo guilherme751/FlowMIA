@@ -91,9 +91,7 @@ class FlowMIA:
                 ), all_cat),
             ]
         )
-        print(self.synth.shape, self.member.shape)
         fit_data = pd.concat([self.synth, self.member], axis=0)
-        print(fit_data.shape)
         self.preprocessor.fit(fit_data)
 
         # Pre-transform every split once so downstream methods receive arrays
