@@ -1,0 +1,15 @@
+member_path: datasets/real/cidds_train.csv
+non_member_path: datasets/reference/ton.csv
+synth_path: datasets/synthetic/netshare.csv
+test_path: datasets/real/cidds_test.csv
+save_path: results_archive/examples/netshare
+
+categorical_cols: [proto]
+numerical_cols: [srcport, dstport, td, pkt, byt]
+ip_cols: [srcip, dstip]
+label_col: label
+
+use_wgan: true
+batch_size: 200
+num_epochs: 10
+fcheckpoint: 5
